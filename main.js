@@ -1,4 +1,3 @@
-
 var getUrl = function (name) {
     first = "https://www.google.co.in/search?q=";
     mid = name.replace(' ', '+');
@@ -7,31 +6,22 @@ var getUrl = function (name) {
 };
 
 var href2url = function (href) {
-    try {
-        var beg = '=';
-        var end = '&';
-        var begIndex = href.indexOf(beg);
-        var endIndex = href.indexOf(end);
-        var url = href.substring(begIndex+1, endIndex);
-    } catch (e) {
-        console.log("e : " + e);
-    }
+    var beg = '=';
+    var end = '&';
+    var begIndex = href.indexOf(beg);
+    var endIndex = href.indexOf(end);
+    var url = href.substring(begIndex+1, endIndex);
     return url;
 };
 
 var str = "Wonder Girls - One Black Night";
 var url = getUrl(str);
 var casper = require('casper').create();
-// var x = require('casper').selectXPath;
-var links = [];
+var x = require('casper').selectXPath;
 
 var getLinks = function () {
     // TODO: Use querySelector
-    try {
-        links = document.querySelectorAll('h3.r a');
-    } catch (e) {
-        console.log("e : " + e);
-    }
+    var links = document.querySelectorAll('h3.r a');
     return Array.prototype.map.call(links, function (e) {
         return e.getAttribute('href');
     });
@@ -39,20 +29,22 @@ var getLinks = function () {
 
 casper.start(url, function() {
     this.echo(this.getTitle());
-    this.capture("img1.png");
-    this.echo("Screenshot saved in start");
 }).viewport(1200, 1000);
 
 casper.then (function () {
-    try {
-        var url_itunes = this.evaluate(getLinks)[0];
-        url_itunes = href2url(url_itunes);
-        console.log("url_itunes : " + url_itunes);
-        
-    } catch (e) {
-        console.log("Error:" + e);
-    }
+    var url_list = this.evaluate(getLinks);
+    var url_itunes = url_list[0];
+    url_itunes = href2url(url_itunes);
+    this.thenOpen(url_itunes);
 });
+
+casper.then (function () {
+    casper.capture("itunes.png");
+});
+//
+// casper.then (function () {
+//     var newText(
+// });
 
 casper.run(function () {
     casper.exit();
