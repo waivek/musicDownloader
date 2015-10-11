@@ -35,16 +35,29 @@ casper.then (function () {
     var url_list = this.evaluate(getLinks);
     var url_itunes = url_list[0];
     url_itunes = href2url(url_itunes);
+    this.echo("Opening iTunes...");
     this.thenOpen(url_itunes);
 });
 
 casper.then (function () {
     casper.capture("itunes.png");
 });
-//
-// casper.then (function () {
-//     var newText(
-// });
+
+casper.then (function () {
+    // var textGenre = casper.fetchText(x('/#<{(|[@id="left-stack"]/div[1]/ul/li[2]/a[1]/span'));
+    var genre = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[2]'));
+    console.log("genre : " + genre);
+    var releaseDate = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'));
+    console.log("releaseDate : " + releaseDate);
+    var album = casper.fetchText(x('//*[@id="title"]/div[1]/h1'));
+    console.log("album : " + album);
+    try {
+        var img = require('utils').dump(casper.getElementAttribute(x('//*[@id="left-stack"]/div[1]/a[1]/div')));
+        console.log("img : " + img);
+    } catch (e) {
+        console.log("e : " + e);
+    }
+});
 
 casper.run(function () {
     casper.exit();
