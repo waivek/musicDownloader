@@ -1,3 +1,4 @@
+// TODO: Search img_url by Image
 var getUrl = function (name) {
     first = "https://www.google.co.in/search?q=";
     mid = name.replace(' ', '+');
@@ -26,18 +27,23 @@ var getLinks = function () {
         return e.getAttribute('href');
     });
 };
+//
+// casper.start(url, function() {
+//     this.echo(this.getTitle());
+// }).viewport(1200, 1000);
+//
+// casper.then (function () {
+//     var url_list = this.evaluate(getLinks);
+//     var url_itunes = url_list[0];
+//     url_itunes = href2url(url_itunes);
+//     this.echo("Opening iTunes...");
+//     this.thenOpen(url_itunes);
+// });
 
+url = "file:///X:/Dropbox/js/mp3/wonder_girls.html";
 casper.start(url, function() {
     this.echo(this.getTitle());
 }).viewport(1200, 1000);
-
-casper.then (function () {
-    var url_list = this.evaluate(getLinks);
-    var url_itunes = url_list[0];
-    url_itunes = href2url(url_itunes);
-    this.echo("Opening iTunes...");
-    this.thenOpen(url_itunes);
-});
 
 casper.then (function () {
     casper.capture("itunes.png");
@@ -46,17 +52,13 @@ casper.then (function () {
 casper.then (function () {
     // var textGenre = casper.fetchText(x('/#<{(|[@id="left-stack"]/div[1]/ul/li[2]/a[1]/span'));
     var genre = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[2]'));
-    console.log("genre : " + genre);
     var releaseDate = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'));
-    console.log("releaseDate : " + releaseDate);
     var album = casper.fetchText(x('//*[@id="title"]/div[1]/h1'));
-    console.log("album : " + album);
-    try {
-        var img = require('utils').dump(casper.getElementAttribute(x('//*[@id="left-stack"]/div[1]/a[1]/div')));
-        console.log("img : " + img);
-    } catch (e) {
-        console.log("e : " + e);
-    }
+    var img_url = casper.getElementAttribute(x('//*[@id="left-stack"]/div[1]/a[1]/div/img'), 'src');
+    console.log("Genre : " + genre);
+    console.log("Date  : " + releaseDate);
+    console.log("Album : " + album);
+    console.log("img   : " + img_url);
 });
 
 casper.run(function () {
