@@ -6,17 +6,28 @@ var getUrl = function (name) {
     return first + mid + end;
 };
 
+var extract_text = require('./helper').extract_text;
+// var extract_text = function ( str, beg, end ) {
+//     var begIndex = str.indexOf(beg);
+//     var endIndex = str.indexOf(end, begIndex+1);
+//     var res = str.substring(begIndex+1, endIndex);
+//     return res;
+// };
+
+// var extract_text = function ( str, beg, end ) {
+//     var begIndex = str.indexOf(beg);
+//     var endIndex = str.indexOf(end);
+//     var res = str.substring(begIndex+1, endIndex);
+//     return res;
+// };
+
 var href2url = function (href) {
-    var beg = '=';
-    var end = '&';
-    var begIndex = href.indexOf(beg);
-    var endIndex = href.indexOf(end);
-    var url = href.substring(begIndex+1, endIndex);
+    var url = extract_text(href, '=', '&');
     return url;
 };
 
 var str = "Wonder Girls - One Black Night";
-var url = getUrl(str);
+var url;
 var casper = require('casper').create();
 var x = require('casper').selectXPath;
 
@@ -27,11 +38,8 @@ var getLinks = function () {
         return e.getAttribute('href');
     });
 };
-//
-// casper.start(url, function() {
-//     this.echo(this.getTitle());
-// }).viewport(1200, 1000);
-//
+
+// url = getUrl(str);
 // casper.then (function () {
 //     var url_list = this.evaluate(getLinks);
 //     var url_itunes = url_list[0];
