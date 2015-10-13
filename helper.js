@@ -12,7 +12,7 @@ module.exports = {
         var html = casper.getHTML();
         var fs = require('fs');
         fs.write('casper_site.html', html, 'w');
-        casper.capture("casper_print_test.png");
+        casper.capture("images/casper_print_test.png");
     }
 
 };

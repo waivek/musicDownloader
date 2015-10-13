@@ -2,10 +2,9 @@ var casper_print = require('./helper').casper_print;
 var extract_text = require('./helper').extract_text;
 var casper = require('casper').create();
 var x = require('casper').selectXPath;
-var url = "http://www.covermytunes.com/";
 var artist_album = "Wonder Girls Reboot";
 
-casper.start(url, function() {
+casper.start( "http://www.covermytunes.com/", function() {
     this.echo(this.getTitle());
 }).viewport(1200, 1000);
 

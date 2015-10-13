@@ -7,6 +7,7 @@ var url = "https://www.youtube.com/watch?v=U5K9AlmWM8s";
 var bad_url = "https://www.youtube.com/watch?v=I2REZSj4XnE";
 var title = "unknown_title";
 var artist = "unknown_artist";
+var artist_album = "unknown";
 
 var url_youtube = url;
 // var url_youtube = bad_url;
@@ -75,18 +76,18 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
                 console.log("Loading iTunes page");
             }, function () {
                 console.log("Google search timed out");
-                casper.capture("timeout_google.png");
+                casper.capture("images/timeout_google.png");
             });
         }
 }, function () {
     console.log("youtube timed out");
-    casper.capture("timeout_youtube.png");  
+    casper.capture("images/timeout_youtube.png");  
 });
 
 casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), function () {
 
     this.echo("Loaded iTunes page" + this.getTitle());
-    this.capture('itunes.png');
+    this.capture('images/itunes.png');
     var genre = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[2]/a[1]/span'));
     var releaseDate = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'));
     var album = casper.fetchText(x('//*[@id="title"]/div[1]/h1'));
@@ -101,10 +102,12 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     console.log("Album : " + album);
     console.log("img   : " + img_url);
 
+    artist_album = artist + " " + album;
+
 }, function () {
-    console.log("iTunes timed out after 10 seconds");
+    console.log("iTunes timed out");
     casper_print(this);
-    casper.capture("timeout_itunes.png");
+    casper.capture("images/timeout_itunes.png");
 });
 
 casper.thenOpen( "http://www.youtube-mp3.org/", function () {
@@ -116,7 +119,7 @@ casper.waitForSelector( x('//*[@id="youtube-url"]'), function () {
 }, function () {
     console.log("youtube-mp3 time out");
     casper_print(this);
-    casper.capture("timeout_ymp3.png");
+    casper.capture("images/timeout_ymp3.png");
 });
 
 casper.then(function () {
@@ -124,14 +127,50 @@ casper.then(function () {
 });
 
 casper.waitForSelector(x('//*[@id="dl_link"]/a[3]'), function () {
-    casper.capture("test.png");
+    casper.capture("images/test.png");
     var url_mp3 = "http://www.youtube-mp3.org" + this.getElementAttribute(x('//*[@id="dl_link"]/a[3]'), 'href');
     console.log("url_mp3 : " + url_mp3);
 }, function () {
     this.echo("ymp3_after_click timed out");
     casper_print(this);
-    this.capture('timeout_ymp3_after_click.png');
+    this.capture('images/timeout_ymp3_after_click.png');
 });
+
+
+casper.thenOpen( "http://www.covermytunes.com/" );
+
+casper.waitForSelector( x('//*[@id="SearchForm"]/form'), function () {
+    this.echo("\nOpened covermytunes.com" + this.getTitle());
+    this.fill( x('//*[@id="SearchForm"]/form'), {
+        'search_query' : artist_album
+    }, true);
+    this.echo("Sent search query '" + artist_album + "'");
+}, function () {
+    this.echo("timeout_cover_my_tunes_before_submit.png");
+    casper_print(this);
+    this.capture('images/timeout_cover_my_tunes_before_submit.png');
+});
+
+casper.waitForSelector( x('//*[@id="CategoryHeading"]/div/table/tbody/tr/td[2]/strong/a'), function (  ) {
+    this.echo("\nSent search query - " + this.getTitle());
+    this.click( x('//*[@id="CategoryHeading"]/div/table/tbody/tr/td[2]/strong/a') );
+}, function () {
+    this.echo("timeout_cover_my_tunes_after_submit.png");
+    casper_print(this);
+    this.capture('images/timeout_cover_my_tunes_after_submit.png');
+});
+
+casper.waitForSelector( x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), function (  ) {
+    this.echo("\nLoaded album cover art" + this.getTitle());
+    var img_url = casper.getElementAttribute(x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), 'src');
+    console.log("img_url : " + img_url);
+}, function () {
+    this.echo("timeout_cover_my_tunes_image_load.png");
+    casper_print(this);
+    this.capture('images/timeout_cover_my_tunes_image_load.png');
+});
+
+
 
 casper.run(function () {
     casper.exit();
