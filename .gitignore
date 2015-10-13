@@ -3,3 +3,6 @@
 *.mp3
 *.ini
 *files/*
+local_sites/
+casper_site.html
+links.txt

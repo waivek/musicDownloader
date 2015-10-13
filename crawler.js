@@ -9,6 +9,7 @@ var title = "unknown_title";
 var artist = "unknown_artist";
 var artist_album = "unknown";
 
+
 var url_youtube = url;
 // var url_youtube = bad_url;
 casper.start(url_youtube, function() {
@@ -169,8 +170,6 @@ casper.waitForSelector( x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), func
     casper_print(this);
     this.capture('images/timeout_cover_my_tunes_image_load.png');
 });
-
-
 
 casper.run(function () {
     casper.exit();
