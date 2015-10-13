@@ -8,8 +8,9 @@ var bad_url = "https://www.youtube.com/watch?v=I2REZSj4XnE";
 var title = "unknown_title";
 var artist = "unknown_artist";
 
-casper.start(bad_url, function() {
-// casper.start(url, function() {
+var url_youtube = url;
+// var url_youtube = bad_url;
+casper.start(url_youtube, function() {
     this.echo(this.getTitle());
 }).viewport(1200, 1000);
 
@@ -104,6 +105,32 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     console.log("iTunes timed out after 10 seconds");
     casper_print(this);
     casper.capture("timeout_itunes.png");
+});
+
+casper.thenOpen( "http://www.youtube-mp3.org/", function () {
+    this.echo("Opened the site = " + this.getTitle() );
+});
+
+casper.waitForSelector( x('//*[@id="youtube-url"]'), function () {
+    this.sendKeys(x('//*[@id="youtube-url"]'), url_youtube);
+}, function () {
+    console.log("youtube-mp3 time out");
+    casper_print(this);
+    casper.capture("timeout_ymp3.png");
+});
+
+casper.then(function () {
+    this.click(x('//*[@id="submit"]'));
+});
+
+casper.waitForSelector(x('//*[@id="dl_link"]/a[3]'), function () {
+    casper.capture("test.png");
+    var url_mp3 = "http://www.youtube-mp3.org" + this.getElementAttribute(x('//*[@id="dl_link"]/a[3]'), 'href');
+    console.log("url_mp3 : " + url_mp3);
+}, function () {
+    this.echo("ymp3_after_click timed out");
+    casper_print(this);
+    this.capture('timeout_ymp3_after_click.png');
 });
 
 casper.run(function () {
