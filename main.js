@@ -5,19 +5,18 @@ var casper = require('casper').create();
 var x = require('casper').selectXPath;
 var url = "https://www.youtube.com/watch?v=U5K9AlmWM8s";
 var bad_url = "https://www.youtube.com/watch?v=I2REZSj4XnE";
-var title = "unknown_artist";
+var title = "unknown_title";
+var artist = "unknown_artist";
 
-// casper.start(bad_url, function() {
-casper.start(url, function() {
+casper.start(bad_url, function() {
+// casper.start(url, function() {
     this.echo(this.getTitle());
 }).viewport(1200, 1000);
 
 casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
         // var artist = "unknown_artist";
-        var title = "unknown_title";
         var str = "unknown_str";
-        var x_path_itunes = x('//*[@id="watch-description-extras"]/ul/li[1]/ul/li/a');
-        var url_itunes = this.getElementAttribute( x_path_itunes, 'href' );
+        var url_itunes = this.getElementAttribute( x('//*[@id="watch-description-extras"]/ul/li[1]/ul/li/a'), 'href' );
 
         // checking if YouTube has tagged the song and linked to the
         // corresponding iTunes page
@@ -29,10 +28,12 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             // str = "$title" by $artist" (
             // EXAMPLE : 
             // str = "One Black Night" by Wonder Girls (
+            
+            casper_print(this);
 
-            str = casper.fetchText(x_path_itunes);
+            str = casper.fetchText( x('//*[@id="watch-description-extras"]/ul/li[1]/ul/li'));
             title = extract_text( str, '"', '"');
-            // artist = extract_text( str, '" by ', ' (');
+            artist = extract_text( str, '" by ', ' (');
 
             this.thenOpen(url_itunes, function() {
                 console.log("Now opening url_itunes = " + url_itunes);
@@ -43,13 +44,23 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             // this means that YouTube has NOT tagged the song
             // we need to manually search for the iTunes link
 
+            url_itunes = "unknown_url";
+            str = this.fetchText(x('//*[@id="eow-title"]')).trim();
+            // This block tries to extract $artist and $title from the title of
+            // the YouTube video. It is VERY unreliable. It would be safer to
+            // later add an option asking the user whether the $title and the
+            // $artist are correct or not, before initiating a search for the
+            // URL. If the title is of the for a-b-c-d then $artist = a-b-c and
+            // $title = $d
+            var index_dash = str.lastIndexOf('-');
+            artist = str.substring(0, index_dash);
+            title = str.substring(index_dash+1);
+
             var str_clean = function ( str ) {
-                str = str.trim() + ' site:itunes.apple.com';
+                str = str + ' site:itunes.apple.com';
                 str = str.replace ( /lyric(s)?/ig, '' );
                 return str;
             };
-            url_itunes = "unknown_url";
-            str = this.fetchText(x('//*[@id="eow-title"]'));
             str = str_clean ( str );
 
             this.thenOpen('http://google.fr/', function() {
@@ -67,7 +78,7 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             });
         }
 }, function () {
-    console.log("youtbe timed out");
+    console.log("youtube timed out");
     casper.capture("timeout_youtube.png");  
 });
 
@@ -80,8 +91,10 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     var album = casper.fetchText(x('//*[@id="title"]/div[1]/h1'));
     var img_url = casper.getElementAttribute(x('//*[@id="left-stack"]/div[1]/a[1]/div/img'), 'src');
     var artist = casper.fetchText( x('//*[@id="title"]/div[1]/span/a/h2'));
+
     console.log("Results of iTunes :- ");
-    console.log("artist: " + artist);
+    console.log("Artist: " + artist);
+    console.log("Title : " + title);
     console.log("Genre : " + genre);
     console.log("Date  : " + releaseDate);
     console.log("Album : " + album);
