@@ -5,7 +5,7 @@
 var add_quotes = function ( input ) {
     return '"' + input + '"';
 };
-var execSync = require('child_process').execSync;
+var exec = require('child_process').exec;
 var tag = function ( input_path, input_file_name, title, album, artist, genre, date, img_path) {
     var dir_song = 'X:\\Dropbox\\js\\mp3\\music';
     var input = input_file_name;
@@ -27,9 +27,11 @@ var tag = function ( input_path, input_file_name, title, album, artist, genre, d
 
     var cmd_del = "del " + input_file_name;
 
+    var sink = "";
 
-    execSync( cmd_tag, { cwd : dir_song } );
-    execSync( cmd_del, { cwd : dir_song } );
+    exec( cmd_tag, { cwd : dir_song }, function () {
+        exec( cmd_del, { cwd : dir_song } );
+    });
 };
 
 tag("music/", "song.mp3", "One Black Night", "REBOOT", "Wonder Girls",
