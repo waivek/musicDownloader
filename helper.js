@@ -13,6 +13,8 @@ module.exports = {
         var fs = require('fs');
         fs.write('casper_site.html', html, 'w');
         casper.capture("images/casper_print_test.png");
+    },
+    obj_to_string : function ( obj ) {
+        return JSON.stringify(obj, null, 4);
     }
-
 };
