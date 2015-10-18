@@ -16,5 +16,12 @@ module.exports = {
     },
     obj_to_string : function ( obj ) {
         return JSON.stringify(obj, null, 4);
+    },
+    add_quotes : function ( str, q ) {
+        return q + str + q;
+    },
+    get_song_name : function ( obj ) {
+        return obj[ "--ta" ] + " - " + obj[ "--tt" ];
     }
+
 };

@@ -4,11 +4,16 @@ module.exports = {
         return cmd_gen( exe, str_opt, input, output );
     }
 };
+var add_quotes = require('./helper').add_quotes;
 
-var option_to_string = function ( option, value ) {
+var option_to_string = function ( option, value) {
     var quote = '"';
     var space = ' ';
-    return "--" + option + space + quote + value + quote;
+    var new_value = "";
+    if ( value.length > 0 ) {
+        new_value = add_quotes( value, quote );
+    } 
+    return option + space + new_value;
 };
 
 var optional_arguments = function ( obj ) {
@@ -23,8 +28,12 @@ var optional_arguments = function ( obj ) {
 
 var cmd_gen = function ( exe, options, input, output ) {
     var quote = '"';
-    input = quote + input + quote;
-    output = quote + output + quote;
+    if ( input.length > 0 ) {
+        input = add_quotes( input, quote);
+    }
+    if ( output.length > 0 ) {
+        output = add_quotes( output, quote);
+    }
     return [exe, options, input, output].join(' ');
 };
 

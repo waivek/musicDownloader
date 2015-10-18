@@ -1,38 +1,41 @@
-// lame music/song.mp3 --tt "One Black Night" --ta "Wonder Girls" --tg "KPop"
-// --tl "REBOOT" --ty "2015" --ti "music/img.jpg" music/new_song.mp3 
-// lame music/song.mp3 --tt "One Black Night" --ta "Wonder Girls" --tg "KPop" --tl "REBOOT" --ty "2015" --ti "music/img.jpg" music/new_song.mp3 
-
-var add_quotes = function ( input ) {
-    return '"' + input + '"';
-};
 var exec = require('child_process').exec;
-var tag = function ( input_path, input_file_name, title, album, artist, genre, date, img_path) {
-    var dir_song = 'X:\\Dropbox\\js\\mp3\\music';
-    var input = input_file_name;
-    // var input = input_path + input_file_name;
-    var output = artist + " - " + title + ".mp3";
-    var dir_lame = "X:\\Dropbox\\js\\mp3\\";
-    var cmd_lame = dir_lame + "lame.exe ";
+var parser = require('./parser').parser;
+var get_song_name = require('./helper').get_song_name;
 
-    var cmd_tag =  
-        cmd_lame + add_quotes( input    ) + 
-        " --tt " + add_quotes( title    ) +
-        " --ta " + add_quotes( artist   ) +
-        " --tg " + add_quotes( genre    ) +
-        " --tl " + add_quotes( album    ) +
-        " --ta " + add_quotes( artist   ) +
-        " --ty " + add_quotes( date     ) +
-        " --ti " + add_quotes( img_path ) +
-        " "      + add_quotes( output   );
+var o= {
+    "--tt"  : "One Black Night" ,
+    "--ta"  : "Wonder Girls"    ,
+    "--tg"  : "KPop"            ,
+    "--tl"  : "REBOOT"          ,
+    "--ty"  : "2015"            ,
+    "--ti"  : "img.jpg",
+    "--mp3input" : ""
+};
+var d_song = 'X:\\Dropbox\\js\\mp3\\music';
+var d_lame = "X:\\Dropbox\\js\\mp3\\";
 
-    var cmd_del = "del " + input_file_name;
-
-    var sink = "";
-
-    exec( cmd_tag, { cwd : dir_song }, function () {
-        exec( cmd_del, { cwd : dir_song } );
-    });
+var get_output_song_name = function ( obj ) {
+    return obj["--ta"] + " - " + obj[ "--tt" ] + ".mp3";
 };
 
-tag("music/", "song.mp3", "One Black Night", "REBOOT", "Wonder Girls",
-        "KPop", "2015", "img.jpg");
+var tag = function ( obj, dir_song, dir_lame ) {
+
+    var input = get_song_name( obj ) + ".tmp";
+    var output = get_song_name( obj ) + ".mp3";
+
+    var exe = dir_lame + "lame.exe ";
+
+    var cmd_tag = parser( exe, obj, input, output );
+    var cmd_del = parser("del", {}, input, "");
+    console.log("cmd_del : " + cmd_del);
+
+    var opt = { cwd : dir_song };
+
+    exec( cmd_tag, opt, function () {
+        exec( cmd_del, opt );
+    });
+    console.log("cmd_tag : " + cmd_tag);
+};
+
+// tag("song.mp3", o, d_song, d_lame );
+tag(o, d_song, d_lame );
