@@ -22,17 +22,12 @@ var optional_arguments = function ( obj ) {
 };
 
 var cmd_gen = function ( exe, options, input, output ) {
+    var quote = '"';
+    input = quote + input + quote;
+    output = quote + output + quote;
     return [exe, options, input, output].join(' ');
 };
 
-// var x = {
-//     tt  : "One Black Night"    ,
-//     ta  : "Wonder Girls"   ,
-//     tg  : "KPop"    ,
-//     tl  : "REBOOT"    ,
-//     ty  : "2015"     ,
-//     ti  : "img.jpg" 
-// };
 
 // var str_opt = optional_arguments( x );
 // console.log("str_cmd : \n" + str_cmd);
