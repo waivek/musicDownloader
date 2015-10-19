@@ -32,7 +32,7 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
         // corresponding iTunes page
 
         if (url_itunes.indexOf ( 'itunes' ) > -1 ) {
-            console.log("[ YouTube ] iTunes link found");
+            this.echo("[ YouTube ] iTunes link found");
 
             // The format of the text will be :
             // str = "$title" by $artist" (
@@ -46,10 +46,10 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             artist = extract_text( str, '" by ', ' (');
 
             this.thenOpen(url_itunes, function() {
-                console.log("[ YouTube ]" + string_cleaner(url_itunes));
+                this.echo("[ YouTube ]" + string_cleaner(url_itunes));
             });
         }  else {
-            console.log("[ YouTube ] iTunes link not found.");
+            this.echo("[ YouTube ] iTunes link not found.");
 
             // this means that YouTube has NOT tagged the song
             // we need to manually search for the iTunes link
@@ -73,25 +73,25 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             };
             str = str_clean ( str );
 
-            console.log("[ YouTube ] Searching Google...");
+            this.echo("[ YouTube ] Searching Google...");
             this.thenOpen('http://google.fr/', function() {
                 this.fill('form[action="/search"]', { q: str}, true);
-                console.log("");
-                console.log('[ Google ] Finding "' + string_cleaner(str));
+                this.echo("");
+                this.echo('[ Google ] Finding "' + string_cleaner(str));
             });
 
             // TODO: Your search did not match any results
             this.waitForSelector ( 'h3.r a', function () {
                 this.click('h3.r a');
-                console.log("");
-                console.log("[ iTunes ] Loading " + string_cleaner(this.getTitle()));
+                this.echo("");
+                this.echo("[ iTunes ] Loading " + string_cleaner(this.getTitle()));
             }, function () {
-                console.log("[ Google ] search timed out");
+                this.echo("[ Google ] search timed out");
                 casper.capture("images/timeout_google.png");
             });
         }
 }, function () {
-    console.log("youtube timed out");
+    this.echo("youtube timed out");
     casper.capture("images/timeout_youtube.png");  
 });
 
@@ -105,15 +105,15 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     // var img_url = casper.getElementAttribute(x('/#<{(|[@id="left-stack"]/div[1]/a[1]/div/img'), 'src');
     var artist = casper.fetchText( x('//*[@id="title"]/div[1]/span/a/h2'));
 
-    console.log("[ iTunes ] " + title +" by " + genre + " artist " + artist);
-    console.log("[ iTunes ] " + album +" released on " + releaseDate);
-    console.log("[ iTunes ] " + genre +" released on " + artist);
-    // console.log("img   : " + img_url);
+    this.echo("[ iTunes ] " + title +" by " + genre + " artist " + artist);
+    this.echo("[ iTunes ] " + album +" released on " + releaseDate);
+    this.echo("[ iTunes ] " + genre +" released on " + artist);
+    // this.echo("img   : " + img_url);
 
     artist_album = artist + " " + album;
 
 }, function () {
-    console.log("[ Google ] timeout_itunes.png");
+    this.echo("[ Google ] timeout_itunes.png");
     casper_print(this);
     casper.capture("images/timeout_itunes.png");
 });
@@ -125,7 +125,7 @@ casper.thenOpen( "http://www.youtube-mp3.org/", function () {
 casper.waitForSelector( x('//*[@id="youtube-url"]'), function () {
     this.sendKeys(x('//*[@id="youtube-url"]'), url_youtube);
 }, function () {
-    console.log("[ iTunes ] timeout_ymp3.png");
+    this.echo("[ iTunes ] timeout_ymp3.png");
     casper_print(this);
     casper.capture("images/timeout_ymp3.png");
 });
@@ -137,7 +137,7 @@ casper.then(function () {
 casper.waitForSelector(x('//*[@id="dl_link"]/a[3]'), function () {
     casper.capture("images/test.png");
     var url_mp3 = "http://www.youtube-mp3.org" + this.getElementAttribute(x('//*[@id="dl_link"]/a[3]'), 'href');
-    console.log("[ ymp3 ] URL=" + url_mp3);
+    this.echo("[ ymp3 ] URL=" + url_mp3);
 }, function () {
     this.echo("[ ymp3 ] timeout_ymp3_after_click.png");
     casper_print(this);
@@ -172,7 +172,7 @@ casper.waitForSelector( x('//*[@id="CategoryHeading"]/div/table/tbody/tr/td[2]/s
 casper.waitForSelector( x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), function (  ) {
     this.echo("[ covermytunes ] Loaded album cover art" + string_cleaner( this.getTitle() ));
     var img_url = casper.getElementAttribute(x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), 'src');
-    console.log("[ covermytunes ] img_url : " + string_cleaner( img_url ));
+    this.echo("[ covermytunes ] img_url : " + string_cleaner( img_url ));
 }, function () {
     this.echo("timeout_cover_my_tunes_image_load.png");
     casper_print(this);
