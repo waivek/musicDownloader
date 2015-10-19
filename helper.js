@@ -22,6 +22,16 @@ module.exports = {
     },
     get_song_name : function ( obj ) {
         return obj[ "--ta" ] + " - " + obj[ "--tt" ];
+    },
+    hash_code : function ( str ) {
+        var hash = 0;
+        if (str.length === 0) return hash;
+        for (i = 0; i < str.length; i++) {
+            c = str.charCodeAt(i);
+            hash = ( ( hash<<5 )- hash )+c;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
     }
 
 };
