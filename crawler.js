@@ -192,7 +192,7 @@ casper.waitForSelector( x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), func
     this.echo( pretty_printer( "covermytunes", "img_url : " + img_url  ) );
     var img_name = get_hash_path( target_dir, str_hash ,"jpg" );
     try {
-        this.download( url,  img_name );
+        this.download( img_url,  img_name );
         this.echo( pretty_printer( "covermytunes", "Downloaded as " + img_name ) );
         obj[ "--ti" ] = img_name;
     } catch ( e ) {

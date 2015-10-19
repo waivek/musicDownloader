@@ -1,8 +1,15 @@
-var add_quotes = require('./helper').add_quotes;
+var add_quotes    = require('./helper').add_quotes;
 var obj_to_string = require('./helper').obj_to_string;
-var parser = require('./parser').parser;
-var exec = require('child_process').exec;
 var get_song_name = require('./helper').get_song_name;
+var parser        = require('./parser').parser;
+var hash_code     = require('./helper').hash_code;
+var get_hash_path = require('./helper').get_hash_path;
+var exec          = require('child_process').exec;
+var target_dir    = "X:\\Dropbox\\js\\mp3\\";
+
+var url         = "https://www.youtube.com/watch?v=U5K9AlmWM8s";
+var bad_url     = "https://www.youtube.com/watch?v=I2REZSj4XnE";
+var url_youtube = bad_url;
 
 var o_song= {
     "--tt"       : "One Black Night" ,
@@ -14,22 +21,34 @@ var o_song= {
     "--mp3input" : ""
 };
 
-var get_youtubedl_options_object = function ( obj_song ) {
+var get_youtubedl_options_object = function ( url_to_hash ) {
     // var name = obj_song[ "--ta" ] + " - " + obj_song[ "--tt" ] + ".%(ext)s";
-    var name = get_song_name( obj_song ) + ".%(ext)s";
+    
+    // var name = get_song_name( obj_song ) + ".%(ext)s";
+    var hash = hash_code ( url_to_hash ) + ".%(ext)s";
+    console.log("url_to_hash : " + url_to_hash);
+    console.log("hash : " + hash);
     return {
         "-x"             : "",
         "--audio-format" : "mp3",
-        "-o"             : name
+        "-o"             : hash,
+        "--audio-quality": "320k"
     };
 };
 
-var download_song = function ( obj_song, dir_youtubedl, dir_ffmpeg, dir_song, url) {
-    var o_exe  = get_youtubedl_options_object( obj_song );
+var download_song = function ( dir_youtubedl, dir_ffmpeg, url) {
+    var flg_dl = get_youtubedl_options_object( url );
     var input  = url;
     var exe    = "youtube-dl";
 
-    var cmd_dl = parser( exe, o_exe, input, "" );
+    var fs = require( 'fs' );
+    var str_hash = hash_code( url ).toString();
+    var file_name = get_hash_path( target_dir, str_hash, "json" );
+    var obj_song = JSON.parse(fs.readFileSync(file_name, 'utf8'));
+
+    var cmd_dl = parser( exe, flg_dl, input, "" );
+    var dir_song = target_dir + str_hash;
+    console.log("dir_song : " + dir_song);
     console.log("cmd_dl : " + cmd_dl);
     var opt = { cwd : dir_song };
 
@@ -39,8 +58,8 @@ var download_song = function ( obj_song, dir_youtubedl, dir_ffmpeg, dir_song, ur
     console.log("cmd_ren : " + cmd_ren);
 
     exec( cmd_dl, opt, function () {
-        exec( cmd_ren, opt );
+        // exec( cmd_ren, opt );
     } );
 };
 
-download_song( o_song, "", "", "X:\\Dropbox\\js\\mp3\\music", "https://www.youtube.com/watch?v=U5K9AlmWM8s" );
+download_song( "", "", url_youtube );

@@ -32,6 +32,10 @@ module.exports = {
             hash = hash & hash; // Convert to 32bit integer
         }
         return hash;
+    },
+    // dir should end with \\
+    get_hash_path : function ( dir, hash, ext ) {
+        return dir + hash + "\\" + hash + "." + ext;
     }
 
 };
