@@ -1,6 +1,10 @@
 var casper_print = require('./helper').casper_print;
 var extract_text = require('./helper').extract_text;
 var pretty_printer = require('./pretty_printer').pretty_printer;
+var obj_to_string = require('./helper').obj_to_string;
+var hash_code = require('./helper').hash_code;
+var target_dir = "X:\\Dropbox\\js\\mp3\\";
+var get_hash_path = require('./helper').get_hash_path;
 
 var casper = require('casper').create();
 var x = require('casper').selectXPath;
@@ -9,6 +13,16 @@ var bad_url = "https://www.youtube.com/watch?v=I2REZSj4XnE";
 var title = "unknown_title";
 var artist = "unknown_artist";
 var artist_album = "unknown";
+
+var obj = {
+        "--tt"       : "unknown_title"  ,
+        "--ta"       : "unknown_artist" ,
+        "--tg"       : "unknown_genre"  ,
+        "--tl"       : "unknown_title"  ,
+        "--ty"       : "unknown_date"   ,
+        "--ti"       : "unknown_img_url"         
+        // "--mp3input" : ""
+};
 
 // var url_youtube = url;
 // with + = 'f]b"wdwf+wd'
@@ -96,8 +110,16 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     var genre = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[2]/a[1]/span'));
     var releaseDate = casper.fetchText(x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'));
     var album = casper.fetchText(x('//*[@id="title"]/div[1]/h1'));
-    // var img_url = casper.getElementAttribute(x('/#<{(|[@id="left-stack"]/div[1]/a[1]/div/img'), 'src');
+    var img_url = casper.getElementAttribute(x('//*[@id="left-stack"]/div[1]/a[1]/div/img'), 'src');
     var artist = casper.fetchText( x('//*[@id="title"]/div[1]/span/a/h2'));
+
+    obj[ "--tt" ] = title;
+    obj[ "--ta" ] = artist;
+    obj[ "--tg" ] = genre;
+    obj[ "--tl" ] = album;
+    obj[ "--ti" ] = img_url;
+    var y = new Date( releaseDate ).getFullYear();
+    obj[ "--ty" ] = y.toString();
 
     this.echo( pretty_printer( "iTunes", title +" by " + genre + " artist " + artist ) );
     this.echo( pretty_printer( "iTunes", album +" released on " + releaseDate ) );
@@ -165,13 +187,36 @@ casper.waitForSelector( x('//*[@id="CategoryHeading"]/div/table/tbody/tr/td[2]/s
 
 casper.waitForSelector( x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), function (  ) {
     this.echo( pretty_printer( "covermytunes",  this.getTitle()  ) );
+    var str_hash = hash_code( url_youtube ).toString();
     var img_url = casper.getElementAttribute(x('//*[@id="ProductDetails"]/div/div[3]/a[3]/img'), 'src');
     this.echo( pretty_printer( "covermytunes", "img_url : " + img_url  ) );
+    var img_name = get_hash_path( target_dir, str_hash ,"jpg" );
+    try {
+        this.download( url,  img_name );
+        this.echo( pretty_printer( "covermytunes", "Downloaded as " + img_name ) );
+        obj[ "--ti" ] = img_name;
+    } catch ( e ) {
+        console.log("e : " + e);
+    }
 }, function () {
     this.echo("timeout_cover_my_tunes_image_load.png");
     casper_print(this);
     this.capture('images/timeout_cover_my_tunes_image_load.png');
 });
+
+casper.then( function () {
+    try {
+        var str_hash = hash_code( url_youtube ).toString();
+        var file_name = get_hash_path( target_dir, str_hash, "json" );
+        // var file_path = 
+        var fs = require('fs');
+        var str_json = obj_to_string( obj );
+        fs.write( file_name, str_json, 'w' );
+    } catch ( e ) {
+        console.log("e : " + e);
+    }
+} );
+
 
 casper.run(function () {
     casper.exit();
