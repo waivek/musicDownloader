@@ -8,7 +8,7 @@ var get_hash_path = require('./helper').get_hash_path;
 
 var casper = require('casper').create();
 var x = require('casper').selectXPath;
-var url = "https://www.youtube.com/watch?v=U5K9AlmWM8s";
+var url = "https://www.youtube.com/watch?v=2om182Fmtd8";
 var bad_url = "https://www.youtube.com/watch?v=I2REZSj4XnE";
 var title = "unknown_title";
 var artist = "unknown_artist";
@@ -24,9 +24,15 @@ var obj = {
         // "--mp3input" : ""
 };
 
+// TODO: Change for playlist
+var get_casper_url = function (  ) {
+    var args = casper.cli.args;
+    return args[ 0 ];
+};
+
 // var url_youtube = url;
-// with + = 'f]b"wdwf+wd'
-var url_youtube = bad_url;
+var url_youtube = get_casper_url();
+console.log("url_youtube : " + url_youtube);
 casper.start(url_youtube, function() {
     pretty_printer( "YouTube", this.getTitle() );
 }).viewport(1200, 1000);
@@ -99,7 +105,7 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             });
         }
 }, function () {
-    this.echo("youtube timed out");
+    this.echo("timeout_youtube.png");
     casper.capture("images/timeout_youtube.png");  
 });
 

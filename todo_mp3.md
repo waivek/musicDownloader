@@ -23,3 +23,7 @@ Tag Artist, Album, Genre, Release Date Add album art
 
 Add fuzzy match to ensure better titles when doing YouTube -> Google -> iTunes
 Remove Globals!
+
+### Learnings
+
+Naming directories in variables - Start with globals

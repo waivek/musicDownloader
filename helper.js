@@ -35,7 +35,7 @@ module.exports = {
     },
     // dir should end with \\
     get_hash_path : function ( dir, hash, ext ) {
-        return dir + hash + "\\" + hash + "." + ext;
+        return dir + "raw\\" + hash + "\\" + hash + "." + ext;
     }
 
 };
