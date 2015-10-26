@@ -1,10 +1,11 @@
 var casper_print = require('./helper').casper_print;
-var extract_text = require('./helper').extract_text;
-var pretty_printer = require('./pretty_printer').pretty_printer;
 var obj_to_string = require('./helper').obj_to_string;
+var extract_text = require('./helper').extract_text;
 var hash_code = require('./helper').hash_code;
+var pretty_printer = require('./pretty_printer').pretty_printer;
 var target_dir = "X:\\Dropbox\\js\\mp3\\";
 var get_hash_path = require('./helper').get_hash_path;
+var mkdirIfNoDir = require('./helper').mkdirIfNoDir;
 
 var casper = require('casper').create();
 var x = require('casper').selectXPath;
@@ -32,7 +33,6 @@ var get_casper_url = function (  ) {
 
 // var url_youtube = url;
 var url_youtube = get_casper_url();
-console.log("url_youtube : " + url_youtube);
 casper.start(url_youtube, function() {
     pretty_printer( "YouTube", this.getTitle() );
 }).viewport(1200, 1000);
@@ -140,31 +140,31 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     casper.capture("images/timeout_itunes.png");
 });
 
-casper.thenOpen( "http://www.youtube-mp3.org/", function () {
-    console.log("");
-    this.echo( pretty_printer( "ymp3",  this.getTitle()   ) );
-});
-casper.waitForSelector( x('//*[@id="youtube-url"]'), function () {
-    this.sendKeys(x('//*[@id="youtube-url"]'), url_youtube);
-}, function () {
-    this.echo( pretty_printer( "iTunes", "timeout_ymp3.png" ) );
-    casper_print(this);
-    casper.capture("images/timeout_ymp3.png");
-});
-
-casper.then(function () {
-    this.click(x('//*[@id="submit"]'));
-});
-
-casper.waitForSelector(x('//*[@id="dl_link"]/a[3]'), function () {
-    casper.capture("images/test.png");
-    var url_mp3 = "http://www.youtube-mp3.org" + this.getElementAttribute(x('//*[@id="dl_link"]/a[3]'), 'href');
-    this.echo( pretty_printer( "ymp3", "URL=" + url_mp3 ) );
-}, function () {
-    this.echo( pretty_printer( "ymp3", "timeout_ymp3_after_click.png" ) );
-    casper_print(this);
-    this.capture('images/timeout_ymp3_after_click.png');
-});
+// casper.thenOpen( "http://www.youtube-mp3.org/", function () {
+//     console.log("");
+//     this.echo( pretty_printer( "ymp3",  this.getTitle()   ) );
+// });
+// casper.waitForSelector( x('/#<{(|[@id="youtube-url"]'), function () {
+//     this.sendKeys(x('/#<{(|[@id="youtube-url"]'), url_youtube);
+// }, function () {
+//     this.echo( pretty_printer( "iTunes", "timeout_ymp3.png" ) );
+//     casper_print(this);
+//     casper.capture("images/timeout_ymp3.png");
+// });
+//
+// casper.then(function () {
+//     this.click(x('/#<{(|[@id="submit"]'));
+// });
+//
+// casper.waitForSelector(x('/#<{(|[@id="dl_link"]/a[3]'), function () {
+//     casper.capture("images/test.png");
+//     var url_mp3 = "http://www.youtube-mp3.org" + this.getElementAttribute(x('/#<{(|[@id="dl_link"]/a[3]'), 'href');
+//     this.echo( pretty_printer( "ymp3", "URL=" + url_mp3 ) );
+// }, function () {
+//     this.echo( pretty_printer( "ymp3", "timeout_ymp3_after_click.png" ) );
+//     casper_print(this);
+//     this.capture('images/timeout_ymp3_after_click.png');
+// });
 
 
 casper.thenOpen( "http://www.covermytunes.com/" );
@@ -214,10 +214,14 @@ casper.then( function () {
     try {
         var str_hash = hash_code( url_youtube ).toString();
         var file_name = get_hash_path( target_dir, str_hash, "json" );
-        // var file_path = 
         var fs = require('fs');
         var str_json = obj_to_string( obj );
-        fs.write( file_name, str_json, 'w' );
+        fs.write( file_name, str_json, 'w', function ( err, stdout, stderr ) {
+            if ( err !== null ) {
+                console.log("err : " + err);
+            }
+            
+        });
     } catch ( e ) {
         console.log("e : " + e);
     }

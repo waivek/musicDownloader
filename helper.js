@@ -39,7 +39,6 @@ module.exports = {
         // return dir + "raw\\" + hash + "\\" + hash + "." + ext;
     },
     mkdirIfNoDir : function ( dir_song ) {
-        var fs = require('fs');
         // http://stackoverflow.com/questions/21194934/node-how-to-create-a-directory-if-doesnt-exist/21196961#21196961
         // TODO: This is supposedly bad practice but it works.
         if ( !fs.existsSync( dir_song ) ) {
@@ -47,3 +46,4 @@ module.exports = {
         }
     }
 };
+var fs = require('fs');

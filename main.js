@@ -11,28 +11,28 @@ var get_url = function () {
     return url;
 };
 
-var dir_target    = "X:\\Dropbox\\js\\mp3\\music";
+var target_dir = "X:\\Dropbox\\js\\mp3\\";
 var dir_lame      = "";
 var dir           = "X:\\Dropbox\\js\\mp3";
 
 var url = get_url();
+var fs = require( 'fs' );
+var hash_code = require('./helper').hash_code;
+var mkdirIfNoDir = require('./helper').mkdirIfNoDir;
+mkdirIfNoDir( target_dir + hash_code( url ).toString() );
 var cmd_csp = parser( "casperjs.bat", { "crawler.js" : "" }, url, "" );
-console.log("cmd_csp : " + cmd_csp);
 
 var opt = { cwd : dir };
+var t = function () {
+    return tag( url );
+};
 
 var eventEmitter = exec( cmd_csp, opt, function ( err, stdout, stderr ) {
-    if ( err !== null ) {
-        console.log("err : " + err);
-    }
-    console.log("\n===Downloading Song===");
-    download_song( url );
-    console.log("\n===Tagging Song===");
-    tag( url );
+    if ( err !== null ) { console.log("err : " + err); }
+    download_song( url, t );
 } );
 
 eventEmitter.stdout.on( 'data', function ( data ) {
     process.stdout.write( data );
 });
-
 

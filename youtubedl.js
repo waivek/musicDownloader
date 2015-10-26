@@ -1,5 +1,5 @@
 module.exports = {
-    download_song : function ( url ) {
+    download_song : function ( url, callback ) {
         var flg_dl = get_youtubedl_options_object( url );
         var str_hash = hash_code( url ).toString();
         var cmd_dl = parser( "youtube-dl", flg_dl, url, "" );
@@ -11,9 +11,11 @@ module.exports = {
         mkdirIfNoDir( dir_song );
 
         var eventEmitter = exec( cmd_dl, opt, function ( err, stdout, stderr ) {
-            console.log("stderr : " + stderr);
             if ( err !== null ) {
                 console.log("err : " + err);
+            }
+            if ( callback && typeof callback === "function" ) {
+                callback();
             }
         });
         eventEmitter.stdout.on( 'data', function ( data ) {
