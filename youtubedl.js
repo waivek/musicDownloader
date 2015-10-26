@@ -1,5 +1,5 @@
 module.exports = {
-    download_song : function ( dir_youtubedl, dir_ffmpeg, url) {
+    download_song : function ( url ) {
         var flg_dl = get_youtubedl_options_object( url );
         var input  = url;
         var exe    = "youtube-dl";
@@ -22,8 +22,8 @@ module.exports = {
 
         exec( cmd_dl, opt, function ( err, stdout, stderr ) {
 
+            console.log("stderr : " + stderr);
             if ( err !== null ) {
-                console.log("stderr : " + stderr);
                 console.log("err : " + err);
             }
 
@@ -69,30 +69,3 @@ var get_youtubedl_options_object = function ( url_to_hash ) {
     };
 };
 
-// var download_song = function ( dir_youtubedl, dir_ffmpeg, url) {
-//     var flg_dl = get_youtubedl_options_object( url );
-//     var input  = url;
-//     var exe    = "youtube-dl";
-//
-//     var fs = require( 'fs' );
-//     var str_hash = hash_code( url ).toString();
-//     var file_name = get_hash_path( target_dir, str_hash, "json" );
-//     var obj_song = JSON.parse(fs.readFileSync(file_name, 'utf8'));
-//
-//     var cmd_dl = parser( exe, flg_dl, input, "" );
-//     var dir_song = target_dir + str_hash;
-//     console.log("dir_song : " + dir_song);
-//     console.log("cmd_dl : " + cmd_dl);
-//     var opt = { cwd : dir_song };
-//
-//     var song_name = get_song_name( obj_song );
-//
-//     var cmd_ren = parser( "ren", {}, song_name+".mp3", song_name+".tmp" );
-//     console.log("cmd_ren : " + cmd_ren);
-//
-//     exec( cmd_dl, opt, function () {
-//         // exec( cmd_ren, opt );
-//     } );
-// };
-
-// download_song( "", "", url_youtube );

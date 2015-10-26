@@ -3,7 +3,12 @@
 *.exe
 *.mp3
 *.ini
+*.json
 *files/*
 local_sites/
+json/
+raw/
+covers/
 casper_site.html
 links.txt
+
