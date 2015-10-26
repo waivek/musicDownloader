@@ -1,7 +1,2 @@
-var casper = require("casper").create();
-
-
-var args = casper.cli.args;
-console.log("args[0] : " + args[0]);
-
-casper.exit();
+var tag = require('./tagger.js').tag;
+tag( "https://www.youtube.com/watch?v=_KMyql7K98o" );

@@ -41,10 +41,4 @@ var get_youtubedl_options_object = function ( url ) {
     };
 };
 
-var mkdirIfNoDir = function ( dir_song ) {
-    // http://stackoverflow.com/questions/21194934/node-how-to-create-a-directory-if-doesnt-exist/21196961#21196961
-    // TODO: This is supposedly bad practice but it works.
-    if ( !fs.existsSync( dir_song ) ) {
-        fs.mkdirSync( dir_song );
-    }
-};
+var mkdirIfNoDir = require('./helper').mkdirIfNoDir;

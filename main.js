@@ -5,7 +5,9 @@ var tag = require('./tagger.js').tag;
 var download_song = require('./youtubedl.js').download_song;
 
 var get_url = function () {
-    var url = "https://www.youtube.com/watch?v=2om182Fmtd8";
+
+    // [0] = exe [1] = file
+    var url = process.argv[ 2 ];
     return url;
 };
 
@@ -14,12 +16,12 @@ var dir_lame      = "";
 var dir           = "X:\\Dropbox\\js\\mp3";
 
 var url = get_url();
-var cmd_dl = parser( "casperjs.bat", { "crawler.js" : "" }, url, "" );
-console.log("cmd_dl : " + cmd_dl);
+var cmd_csp = parser( "casperjs.bat", { "crawler.js" : "" }, url, "" );
+console.log("cmd_csp : " + cmd_csp);
 
 var opt = { cwd : dir };
 
-var eventEmitter = exec( cmd_dl, opt, function ( err, stdout, stderr ) {
+var eventEmitter = exec( cmd_csp, opt, function ( err, stdout, stderr ) {
     if ( err !== null ) {
         console.log("err : " + err);
     }
@@ -32,4 +34,5 @@ var eventEmitter = exec( cmd_dl, opt, function ( err, stdout, stderr ) {
 eventEmitter.stdout.on( 'data', function ( data ) {
     process.stdout.write( data );
 });
+
 
