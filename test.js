@@ -3,34 +3,39 @@ var extract_text = require('./helper').extract_text;
 var casper = require('casper').create();
 var x = require('casper').selectXPath;
 
-var url = "https://www.youtube.com/playlist?list=PLabEsp9mKEJJmv-h3iBx7ZWe4_MAYDtoY";
+var url = "https://www.youtube.com/watch?v=gj0Xl_dEhcs&index=1&list=PLabEsp9mKEJJmv-h3iBx7ZWe4_MAYDtoY";
 casper.start(url, function() {
     this.echo("\nOpened " + this.getTitle());
 }).viewport(1200, 1000);
 
-var get_href = function ( anchor ) {
-    return anchor.getAttribute( 'href' );
+var x_path = x( '//*[@id="watch-description-extras"]/ul/li[1]/ul/li' );
+
+var get_href_list = function (a) {
+    var e = document.createElement( "li" );
+    e.innerHTML = a;
+    var arr_links = e.querySelectorAll( 'a' );
+    return Array.prototype.map.call( arr_links, function( anchor ) {
+        return anchor.getAttribute( 'href' );
+    } );
 };
-casper.waitForSelector( x( '//*[@id="pl-load-more-destination"]/tr[1]/td[4]/a' ), function () {
-    try {
-        // var view_text = this.fetchText( x( '/#<{(|[@id="pl-header"]/div[2]/ul/li[2]' ) );
-        // var size = parseInt( x );
-        var table = document.querySelector( '#pl-load-more-destination' );
-        var obj_to_string = require('./helper').obj_to_string;
-        console.log("obj_to_string( table ) : " + obj_to_string( table ));
-        this.capture('images/pic.png');
-        var array_links = table.querySelectorAll( 'a' );
-        var x = array_links.map( get_href );
-        console.log("x : " + x);
-    } catch ( e ) {
-        console.log("e : " + e);
-    }
-    
+
+casper.waitForSelector( x_path,  function () {
+    var html = casper.getHTML( x_path );
+    var links = this.evaluate( get_href_list, html );
+
+    links = links.filter( function(url) {
+        return url.indexOf( "itunes" ) > -1;
+    } );
+    var link = links[ 0 ];
+
 }, function () {
-    this.echo("timeout_playlist_to_url.png");
+    this.echo("timeout_test_1.png");
     casper_print(this);
-    this.capture('images/timeout_playlist_to_url.png');
+    this.capture('images/timeout_test_1.png');
 });
+
+
+
 
 casper.run(function () {
     casper.exit();

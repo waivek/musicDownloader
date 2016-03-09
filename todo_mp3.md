@@ -1,29 +1,16 @@
-### Flow
-[DONE] Starts at YouTube video
-[DONE] Get Artist, Title
-[DONE] Google Artist, Title in iTunes
-[DONE] Open iTunes page
-[DONE] Get Album, Genre, Release Date
-[DONE] Update Artist
+By adding the iTunes checker, i fear that I may have broken the Linkin Park
+example. Need to analyze the state casperjs is in when I move in a and out of
+the if-else.
 
-Transform data into object
-[DONE] Get small album art url
-[DONE] ?Get large album art url?
-[DONE] Store in HTML with mp3 link
+There is a url ( the Nitin Sawhney one ) where the iTunes URL is the SECOND url
+it is in a list of anchors. the first one redirects to the channel. Need to take
+care of that. Ah this is fun.
 
-[DONE] Put Url in ymp3
-[DONE] Get mp3 url
-Put mp3 in HTML
+tagging is simply not working. Need to make it fucking work.
 
-Download song as "artist - title".mp3 using casper.download()
-
-Tag Artist, Album, Genre, Release Date Add album art 
-
-### Ideas
+Need to make it easier to use in case of manual stuff
 
 Add fuzzy match to ensure better titles when doing YouTube -> Google -> iTunes
 Remove Globals!
-
-### Learnings
 
 Naming directories in variables - Start with globals

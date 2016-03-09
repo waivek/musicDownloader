@@ -19,7 +19,7 @@ var obj = {
         "--tt"       : "unknown_title"  ,
         "--ta"       : "unknown_artist" ,
         "--tg"       : "unknown_genre"  ,
-        "--tl"       : "unknown_title"  ,
+        "--tl"       : "unknown_album"  ,
         "--ty"       : "unknown_date"   ,
         "--ti"       : "unknown_img_url"         
         // "--mp3input" : ""
@@ -33,32 +33,65 @@ var get_casper_url = function (  ) {
 
 // var url_youtube = url;
 var url_youtube = get_casper_url();
+
 casper.start(url_youtube, function() {
-    pretty_printer( "YouTube", this.getTitle() );
+    this.echo( pretty_printer( "YouTube", this.getTitle() ) );
 }).viewport(1200, 1000);
+
+var get_href_list = function (a) {
+    var e = document.createElement( "li" );
+    e.innerHTML = a;
+    var arr_links = e.querySelectorAll( 'a' );
+    return Array.prototype.map.call( arr_links, function( anchor ) {
+        return anchor.getAttribute( 'href' );
+    } );
+};
+
+var get_default_itunes_url = function () {
+    return 'http://www.apple.com/itunes/download/';
+};
 
 casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
         // var artist = "unknown_artist";
         var str = "unknown_str";
-        var url_itunes = this.getElementAttribute( x('//*[@id="watch-description-extras"]/ul/li[1]/ul/li/a'), 'href' );
+        // var url_itunes = this.getElementAttribute( x('/#<{(|[@id="watch-description-extras"]/ul/li[1]/ul/li/a'), 'href' );
+
+        var x_path = x( '//*[@id="watch-description-extras"]/ul/li[1]/ul/li' );
+        var html = casper.getHTML( x_path );
+        var links = this.evaluate( get_href_list, html );
+        links = links.filter( function(url) {
+            return url.indexOf( "itunes" ) > -1;
+        } );
+        var url_itunes = links[ 0 ];
+        var is_itunes = url_itunes.indexOf( 'itunes' ) > -1;
 
         // checking if YouTube has tagged the song and linked to the
         // corresponding iTunes page
+        // TODO : THERE IS SOMETHING WRONG HERE IN THE STATE OF THE CASPERJS
+        // TODO : I FEEL THE LINKIN PARK EXAMPLE HAS BEEN BROKEN
+        if ( is_itunes ) {
+            console.log("=====================");
+            console.log( "YouTube has tagged the song." );
+            console.log("this : " + this);
+            casper.thenOpen(url_itunes);
+            casper.waitForSelector( x('//*[@id="ac-gn-firstfocus"]'), function() {
+                console.log( "Checking if iTunes url is still valid" );
+                url_itunes = this.getCurrentUrl();
+                console.log("url_itunes : " + url_itunes);
+                console.log("=====================");
+            });
+        } else {
+            url_itunes = get_default_itunes_url();
+        }
 
-        if (url_itunes.indexOf ( 'itunes' ) > -1 ) {
+        if ( url_itunes.indexOf( "album" ) > -1 ) {
             this.echo( pretty_printer( "YouTube", "iTunes link found" ) );
-
-            // The format of the text will be :
-            // str = "$title" by $artist" (
-            // EXAMPLE : 
-            // str = "One Black Night" by Wonder Girls (
-            
-            casper_print(this);
 
             str = casper.fetchText( x('//*[@id="watch-description-extras"]/ul/li[1]/ul/li'));
             title = extract_text( str, '"', '"');
             artist = extract_text( str, '" by ', ' (');
 
+            // TODO: If the URL is bad then go to else
             this.thenOpen(url_itunes, function() {
                 this.echo( pretty_printer( "YouTube", url_itunes ) );
             });
@@ -79,6 +112,10 @@ casper.waitForSelector(x('//*[@id="watch-description"]'), function () {
             var index_dash = str.lastIndexOf('-');
             artist = str.substring(0, index_dash);
             title = str.substring(index_dash+1);
+            obj[ "--ta" ] = artist;
+            obj[ "--tt" ] = title;
+            console.log("artist : " + artist);
+            console.log("title : " + title);
 
             var str_clean = function ( str ) {
                 str = str + ' site:itunes.apple.com';
@@ -132,7 +169,12 @@ casper.waitForSelector ( x('//*[@id="left-stack"]/div[1]/ul/li[3]/span[2]'), fun
     this.echo( pretty_printer( "iTunes", genre +" released on " + artist ) );
     // this.echo("img   : " + img_url);
 
-    artist_album = artist + " " + album;
+    if ( album === "unknown_album" ) {
+        artist_album = obj[ "--ta" ] + " " + obj[ "--tt" ];
+    } else {
+        artist_album = obj[ "--ta" ] + " " +  obj[ "--tl" ];
+    }
+    // artist_album = obj[ "--tt" ] + " " + album;
 
 }, function () {
     this.echo( pretty_printer( "Google", "timeout_itunes.png" ) );

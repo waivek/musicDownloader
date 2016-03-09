@@ -1,6 +1,6 @@
 module.exports = {
     pretty_printer : function ( domain, message, time ) {
-        var len = 80;
+        var len = 70;
         var a = "[ " + domain + " ] ";
         var b = message;
         if ( time === undefined ) {
